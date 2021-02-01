@@ -121,16 +121,16 @@ def venues():
   venueCityState = ''
   for location in locations:
     venue = {
-      "id": Venue.id,
-      "name": Venue.name,
+      "id": location.id,
+      "name": location.name,
       #TODO change upcoming shows
       "num_upcoming_shows": 0
     }
-    if venueCityState != Venue.city + Venue.state:
-      venueCityState = Venue.city + Venue.state
+    if venueCityState != location.city + location.state:
+      venueCityState = location.city + location.state
       data.append({
-        "city": Venue.city,
-        "state": Venue.state,
+        "city": location.city,
+        "state": location.state,
         "venues": venue
       })
     else:
@@ -273,16 +273,23 @@ def delete_venue(venue_id):
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
-  data=[{
-    "id": 4,
-    "name": "Guns N Petals",
-  }, {
-    "id": 5,
-    "name": "Matt Quevedo",
-  }, {
-    "id": 6,
-    "name": "The Wild Sax Band",
-  }]
+  # data=[{
+  #   "id": 4,
+  #   "name": "Guns N Petals",
+  # }, {
+  #   "id": 5,
+  #   "name": "Matt Quevedo",
+  # }, {
+  #   "id": 6,
+  #   "name": "The Wild Sax Band",
+  # }]
+  data = []
+  artists = Artist.query.group_by(Artist.id).all()
+  for artist in artists:
+    data.append({
+      "id": artist.id,
+      "name": artist.name
+    })
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
