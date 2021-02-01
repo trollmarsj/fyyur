@@ -99,8 +99,6 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
   # data=[{
   #   "city": "San Francisco",
   #   "state": "CA",
@@ -129,7 +127,7 @@ def venues():
     venue = {
       "id": location.id,
       "name": location.name,
-      #TODO change upcoming shows
+      #TODO num_shows should be aggregated based on number of upcoming shows per venue.
       "num_upcoming_shows": 0
     }
     if venueCityState != location.city + location.state:
@@ -278,7 +276,6 @@ def delete_venue(venue_id):
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
-  # TODO: replace with real data returned from querying the database
   # data=[{
   #   "id": 4,
   #   "name": "Guns N Petals",
