@@ -116,29 +116,29 @@ def venues():
   #     "num_upcoming_shows": 0,
   #   }]
   # }]
-    data = []
-    locations = Venue.query.group_by(Venue.id, Venue.city, Venue.state).all()
-    venueCityState = ''
-    for location in locations:
-      venue = {
-        "id": Venue.id,
-        "name": Venue.name,
-        #TODO change upcoming shows
-        "num_upcoming_shows": 0
-      }
-      if venueCityState != Venue.city + Venue.state:
-        venueCityState = Venue.city + Venue.state
-        data.append({
-          "city": Venue.city,
-          "state": Venue.state,
-          "venues": venue
-        })
-      else:
-        data["venues"].append({venue})
+  data = []
+  locations = Venue.query.group_by(Venue.id, Venue.city, Venue.state).all()
+  venueCityState = ''
+  for location in locations:
+    venue = {
+      "id": Venue.id,
+      "name": Venue.name,
+      #TODO change upcoming shows
+      "num_upcoming_shows": 0
+    }
+    if venueCityState != Venue.city + Venue.state:
+      venueCityState = Venue.city + Venue.state
+      data.append({
+        "city": Venue.city,
+        "state": Venue.state,
+        "venues": venue
+      })
+    else:
+      data["venues"].append({venue})
 
 
-    
-    return render_template('pages/venues.html', areas=data)
+  
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
