@@ -124,11 +124,12 @@ def venues():
   locations = Venue.query.group_by(Venue.id, Venue.city, Venue.state).all()
   venueCityState = ''
   for location in locations:
+    upcomingShow = location.shows.query.filter(Show.start_time>datetime.now()).all()
     venue = {
       "id": location.id,
       "name": location.name,
       #TODO num_shows should be aggregated based on number of upcoming shows per venue.
-      "num_upcoming_shows": 0
+      "num_upcoming_shows": len(upcomingShow)
     }
     if venueCityState != location.city + location.state:
       venueCityState = location.city + location.state
@@ -470,6 +471,7 @@ def create_artist_submission():
 def shows():
   # displays list of shows at /shows
   # TODO: num_shows should be aggregated based on number of upcoming shows per venue.
+  #       add a filter by current time.
   # data=[{
   #   "venue_id": 1,
   #   "venue_name": "The Musical Hop",
@@ -507,7 +509,7 @@ def shows():
   #   "start_time": "2035-04-15T20:00:00.000Z"
   # }]
   data = []
-  showsQuery = Show.query.group_by(Show.venue_id, Show.Artist_id).all() 
+  showsQuery = Show.query.group_by(Show.id, Show.venue_id, Show.artist_id).all() 
   for show in showsQuery:
     data.append({
       "venue_id": show.venue_id,
