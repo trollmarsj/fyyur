@@ -128,7 +128,6 @@ def venues():
     venue = {
       "id": location.id,
       "name": location.name,
-      #TODO num_shows should be aggregated based on number of upcoming shows per venue.
       "num_upcoming_shows": len(upcomingShow)
     }
     if venueCityState != location.city + location.state:
@@ -139,7 +138,7 @@ def venues():
         "venues": venue
       })
     else:
-      data["venues"].append({venue})
+      data["venues"].append(venue)
 
 
   
@@ -164,6 +163,7 @@ def search_venues():
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
+  # TODO: when past_shows is not empty, it is not displayed correctly
   data1={
     "id": 1,
     "name": "The Musical Hop",
@@ -177,6 +177,7 @@ def show_venue(venue_id):
     "seeking_talent": True,
     "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
     "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60",
+    # "past_shows": [],
     "past_shows": [{
       "artist_id": 4,
       "artist_name": "Guns N Petals",
@@ -241,7 +242,8 @@ def show_venue(venue_id):
     "past_shows_count": 1,
     "upcoming_shows_count": 1,
   }
-  data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+  #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+  data = Venue.query.get(venue_id)
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
@@ -254,14 +256,32 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
+  # insert form data as a new Venue record in the db, instead
+  # modify data to be the data object returned from db insertion
 
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+  try:
+    venue = Venue(
+      name=request.form["name"],
+      city=request.form["city"],
+      state=request.form["state"],
+      address=request.form["address"],
+      phone=request.form["phone"],
+      genres=request.form.getlist("genres"),
+      facebook_link=request.form["facebook_link"]
+    )
+    db.session.add(venue)
+    db.session.commit()
+    # on successful db insert, flash success
+    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+  except:
+    # on unsuccessful db insert, flash an error instead.
+    # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
+    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+    db.session.rollback()
+    flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
+  finally:
+    db.session.close()
+  
   return render_template('pages/home.html')
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
