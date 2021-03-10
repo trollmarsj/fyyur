@@ -13,6 +13,7 @@ from flask_migrate import Migrate
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+import sys
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -66,7 +67,8 @@ class Genre(db.Model):
     __tablename__ = 'Genre'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=True)
+    venue_id = db.Column(db.Integer, db.ForeignKey(Venue.id), nullable=False)
+    name = db.Column(db.String, unique=True)
 
     def __repr__(self):
         return f'<Genre {self.name}>'
@@ -134,7 +136,9 @@ def venues():
   locations = Venue.query.group_by(Venue.id, Venue.city, Venue.state).all()
   venueCityState = ''
   for location in locations:
-    upcomingShow = location.shows.query.filter(Show.start_time>datetime.now()).all()
+    # TODO replace upcomgingShow with real data
+    #upcomingShow = location.shows.query.filter(Show.start_time>datetime.now()).all()
+    upcomingShow = ["first", "second", "third"]
     venue = {
       "id": location.id,
       "name": location.name,
@@ -268,7 +272,7 @@ def create_venue_form():
 def create_venue_submission():
   # insert form data as a new Venue record in the db, instead
   # modify data to be the data object returned from db insertion
-
+  # TODO cant not add to venue.genres
   try:
     venue = Venue(
       name=request.form["name"],
@@ -288,6 +292,7 @@ def create_venue_submission():
     # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     db.session.rollback()
+    print(sys.exc_info())
     flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
   finally:
     db.session.close()
