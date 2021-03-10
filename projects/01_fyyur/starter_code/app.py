@@ -40,6 +40,7 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    genre = db.relationship('Genre', backref='Venue', lazy=True)
     shows = db.relationship('Show', backref='Venue', lazy=True)
 
     def __repr__(self):
@@ -60,6 +61,15 @@ class Artist(db.Model):
 
     def __repr__(self):
         return f'<Artist {self.id} {self.name}>'
+
+class Genre(db.Model):
+    __tablename__ = 'Genre'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), unique=True)
+
+    def __repr__(self):
+        return f'<Genre {self.name}>'
 
 class Show(db.Model):
     __tablename__ = 'Show'
