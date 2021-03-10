@@ -11,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 import logging
 from flask_migrate import Migrate
 from logging import Formatter, FileHandler
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from forms import *
 import sys
 #----------------------------------------------------------------------------#
@@ -67,8 +67,8 @@ class Genre(db.Model):
     __tablename__ = 'Genre'
 
     id = db.Column(db.Integer, primary_key=True)
-    venue_id = db.Column(db.Integer, db.ForeignKey(Venue.id), nullable=False)
-    name = db.Column(db.String, unique=True)
+    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+    name = db.Column(db.String(120), unique=True)
 
     def __repr__(self):
         return f'<Genre {self.name}>'
@@ -153,9 +153,7 @@ def venues():
       })
     else:
       data["venues"].append(venue)
-
-
-  
+ 
   return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
@@ -257,6 +255,7 @@ def show_venue(venue_id):
     "upcoming_shows_count": 1,
   }
   #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+  # TODO someting about genre.venue_id doesnt exist problem here
   data = Venue.query.get(venue_id)
   return render_template('pages/show_venue.html', venue=data)
 
@@ -280,9 +279,10 @@ def create_venue_submission():
       state=request.form["state"],
       address=request.form["address"],
       phone=request.form["phone"],
-      genres=request.form.getlist("genres"),
+      #genres=request.form.getlist("genres"),
       facebook_link=request.form["facebook_link"]
     )
+
     db.session.add(venue)
     db.session.commit()
     # on successful db insert, flash success
