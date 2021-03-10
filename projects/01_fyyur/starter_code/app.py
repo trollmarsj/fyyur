@@ -68,7 +68,7 @@ class Genre(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
-    name = db.Column(db.String(120), unique=True)
+    name = db.Column(db.String(120))
 
     def __repr__(self):
         return f'<Genre {self.name}>'
@@ -271,7 +271,7 @@ def create_venue_form():
 def create_venue_submission():
   # insert form data as a new Venue record in the db, instead
   # modify data to be the data object returned from db insertion
-  # TODO cant not add to venue.genres
+  
   try:
     venue = Venue(
       name=request.form["name"],
@@ -282,6 +282,9 @@ def create_venue_submission():
       #genres=request.form.getlist("genres"),
       facebook_link=request.form["facebook_link"]
     )
+    genre_list = request.form.getlist("genres")
+    for genre in genre_list:
+      db.session.add(Genre(name=genre, Venue=venue))
 
     db.session.add(venue)
     db.session.commit()
