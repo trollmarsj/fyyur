@@ -40,7 +40,7 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    genre = db.relationship('Genre', backref='Venue', lazy=True)
+    genres = db.relationship('Genre', backref='Venue', lazy=True)
     shows = db.relationship('Show', backref='Venue', lazy=True)
 
     def __repr__(self):
