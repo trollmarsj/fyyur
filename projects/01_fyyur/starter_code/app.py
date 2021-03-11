@@ -111,48 +111,55 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # data=[{
-  #   "city": "San Francisco",
-  #   "state": "CA",
-  #   "venues": [{
-  #     "id": 1,
-  #     "name": "The Musical Hop",
-  #     "num_upcoming_shows": 0,
-  #   }, {
-  #     "id": 3,
-  #     "name": "Park Square Live Music & Coffee",
-  #     "num_upcoming_shows": 1,
-  #   }]
-  # }, {
-  #   "city": "New York",
-  #   "state": "NY",
-  #   "venues": [{
-  #     "id": 2,
-  #     "name": "The Dueling Pianos Bar",
-  #     "num_upcoming_shows": 0,
-  #   }]
-  # }]
+  data=[{
+    "city": "San Francisco",
+    "state": "CA",
+    "venues": [{
+      "id": 1,
+      "name": "The Musical Hop",
+      "num_upcoming_shows": 0,
+    }, {
+      "id": 3,
+      "name": "Park Square Live Music & Coffee",
+      "num_upcoming_shows": 1,
+    }]
+  }, {
+    "city": "New York",
+    "state": "NY",
+    "venues": [{
+      "id": 2,
+      "name": "The Dueling Pianos Bar",
+      "num_upcoming_shows": 0,
+    }]
+  }]
+
   data = []
-  locations = Venue.query.group_by(Venue.id, Venue.city, Venue.state).all()
+  locations = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
   venueCityState = ''
   for location in locations:
     # TODO replace upcomgingShow with real data
     #upcomingShow = location.shows.query.filter(Show.start_time>datetime.now()).all()
     upcomingShow = ["first", "second", "third"]
+    
     venue = {
-      "id": location.id,
-      "name": location.name,
-      "num_upcoming_shows": len(upcomingShow)
-    }
+        "id": location.id,
+        "name": location.name,
+        "num_upcoming_shows": len(upcomingShow)
+      }
+
     if venueCityState != location.city + location.state:
+
       venueCityState = location.city + location.state
+      venue_list = []
+      venue_list.append(venue)
       data.append({
         "city": location.city,
         "state": location.state,
-        "venues": venue
+        "venues": venue_list
       })
     else:
-      data["venues"].append(venue)
+      venue_list.append(venue)
+      data["venues"] = venue_list
  
   return render_template('pages/venues.html', areas=data)
 
@@ -174,8 +181,8 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
-  # TODO: when past_shows is not empty, it is not displayed correctly
+  # TODO: genre tag display not correctly
+  
   data1={
     "id": 1,
     "name": "The Musical Hop",
@@ -255,7 +262,7 @@ def show_venue(venue_id):
     "upcoming_shows_count": 1,
   }
   #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
-  # TODO someting about genre.venue_id doesnt exist problem here
+  
   data = Venue.query.get(venue_id)
   return render_template('pages/show_venue.html', venue=data)
 
