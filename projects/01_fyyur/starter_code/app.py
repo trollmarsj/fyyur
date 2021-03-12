@@ -111,32 +111,12 @@ def index():
 
 @app.route('/venues')
 def venues():
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
+  # Shows a list of the venues from db, sorted based on city, state
 
   data = []
   # TODO city name sorted should be case insensitive
   locations = Venue.query.order_by(Venue.state, Venue.city, Venue.id).all()
-  venueCityState = ''
+  venue_city_state = ''
   for location in locations:
     # TODO replace upcomgingShow with real data
     #upcomingShow = location.shows.query.filter(Show.start_time>datetime.now()).all()
@@ -148,9 +128,9 @@ def venues():
         "num_upcoming_shows": len(upcomingShow)
       }
 
-    if venueCityState != location.city + location.state:
+    if venue_city_state != location.city + location.state:
 
-      venueCityState = location.city + location.state
+      venue_city_state = location.city + location.state
       venue_list = []
       venue_list.append(venue)
       data.append({
@@ -181,7 +161,7 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  # shows the venue page with the given venue_id
+  # Shows the venue page with the given venue_id
   # TODO: genre tag display not correctly
   
   data1={
@@ -277,8 +257,7 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  # insert form data as a new Venue record in the db, instead
-  # modify data to be the data object returned from db insertion
+  # insert form data as a new Venue record in the db
   
   try:
     venue = Venue(
@@ -314,6 +293,18 @@ def create_venue_submission():
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+  try:
+    venue = Venue.query.get(venue_id)
+    genres = Genre.query.filter(Genre.venue_id == venue_id)
+    for genre in genres:
+      db.session.delete(genre)
+    db.session.delete(venue)
+    db.session.commit()
+  except:
+    db.session.rollback()
+    print(sys.exc_info())
+  finally:
+    db.session.close()
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
