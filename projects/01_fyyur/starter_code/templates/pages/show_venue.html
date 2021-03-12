@@ -1,6 +1,11 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Venue Search{% endblock %}
 {% block content %}
+<style>
+	.delete-button {
+		color:tomato;
+	}
+</style>
 <div class="row">
 	<div class="col-sm-6">
 		<h1 class="monospace">
@@ -78,6 +83,28 @@
 		{% endfor %}
 	</div>
 </section>
+	
+<section>
+	<button class="delete-button">Delete Venue</button>
+</section>
+
+<script>
+	const deleteButton = document.querySelector('.delete-button');
+	
+	deleteButton.onclick = function(){
+		fetch('/venues/{{venue.id}}', {
+			method: 'DELETE',
+		})
+		.then(response => response.json())
+		.then((json) => {
+        if (json['success'] === true) {
+            document.location = '/venues'
+        } else {
+            document.location = '/venues/{{venue.id}}'
+        }
+    	}).catch(error => error);
+	}
+</script>
 
 {% endblock %}
 
