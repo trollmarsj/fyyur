@@ -134,7 +134,8 @@ def venues():
   }]
 
   data = []
-  locations = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
+  # TODO city name sorted should be case insensitive
+  locations = Venue.query.order_by(Venue.state, Venue.city, Venue.id).all()
   venueCityState = ''
   for location in locations:
     # TODO replace upcomgingShow with real data
@@ -159,7 +160,7 @@ def venues():
       })
     else:
       venue_list.append(venue)
-      data["venues"] = venue_list
+      data[-1]["venues"] = venue_list
  
   return render_template('pages/venues.html', areas=data)
 
