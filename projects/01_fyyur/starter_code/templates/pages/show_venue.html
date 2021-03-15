@@ -94,17 +94,19 @@
 	const deleteButton = document.querySelector('.delete-button');
 	
 	deleteButton.onclick = function(){
-		fetch('/venues/{{venue.id}}', {
+		const venueId = {{venue.id}};
+		fetch('/venues/' + venueId, {
 			method: 'DELETE',
 		})
 		.then(response => response.json())
 		.then((json) => {
-        if (json['success'] === true) {
-            document.location = '/venues'
-        } else {
-            document.location = '/venues/{{venue.id}}'
-        }
-    	}).catch(error => error);
+        	if (json['success'] == true) {
+				window.location.assign('/venues');
+        	} else {
+            	window.location.assign('/venues/{{venue.id}}');
+        	}
+		})
+		.catch(error => error)
 	}
 </script>
 
