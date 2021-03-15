@@ -94,8 +94,7 @@
 	const deleteButton = document.querySelector('.delete-button');
 	
 	deleteButton.onclick = function(){
-		const venueId = {{venue.id}};
-		fetch('/venues/' + venueId, {
+		fetch('/venues/{{venue.id}}', {
 			method: 'DELETE',
 		})
 		.then(response => response.json())
